@@ -4,11 +4,103 @@ import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 
+const categories = [
+  "Men", "Women", "Kids", "Electronics", "Home & Kitchen", "Beauty & Health", "Sports & Outdoors", 
+  "Automotive", "Books", "Toys & Games", "Artificial Jewelry", "Shoes", "Pet Supplies", "Stationery", 
+  "Musical Instruments", "Gardening", "Baby Products"
+];
+
+
+const subCategories = {
+  Men: [
+    "Topwear", "Bottomwear", "Winterwear", "Footwear", "Accessories", 
+    "Innerwear", "Ethnic Wear", "Suits & Blazers", "Watches", "Sunglasses"
+  ],
+  Women: [
+    "Dresses", "Ethnic Wear", "Western Wear", "Jewelry", "Handbags", 
+    "Footwear", "Lingerie", "Sarees", "Kurtis", "Beauty Products"
+  ],
+  Kids: [
+    "Boys Clothing", "Girls Clothing", "Toys", "School Supplies", 
+    "Baby Essentials", "Footwear", "Bags", "Party Wear"
+  ],
+  Electronics: [
+    "Mobiles", "Laptops", "Cameras", "Headphones", "Smart Watches", 
+    "Tablets", "Gaming Consoles", "Smart TVs", "Printers", "Drones"
+  ],
+  "Home & Kitchen": [
+    "Furniture", "Home Decor", "Kitchen Appliances", "Lighting", 
+    "Storage Solutions", "Bedding", "Bathroom Essentials", "Cleaning Supplies"
+  ],
+  "Beauty & Health": [
+    "Makeup", "Skincare", "Haircare", "Fragrances", "Personal Care", 
+    "Hygiene Products", "Health Supplements", "Fitness Gear"
+  ],
+  "Sports & Outdoors": [
+    "Gym Equipment", "Outdoor Gear", "Cycling", "Camping Equipment", 
+    "Team Sports", "Running Gear", "Swimming Accessories"
+  ],
+  Automotive: [
+    "Car Accessories", "Bike Accessories", "Car Care", "Helmets", 
+    "Motorbike Gear", "Spare Parts", "Car Electronics"
+  ],
+  Books: [
+    "Fiction", "Non-Fiction", "Educational", "Comics", "Biographies", 
+    "Self-Help", "Fantasy", "Science Fiction", "Children’s Books"
+  ],
+  "Toys & Games": [
+    "Board Games", "Action Figures", "Puzzles", "Building Blocks", 
+    "Dolls", "Remote Control Toys", "Video Games"
+  ],
+  "Artificial Jewelry": [
+    "Earrings", "Necklaces", "Bracelets", "Rings", "Anklets", 
+    "Bangles", "Brooches", "Hair Accessories"
+  ],
+  Shoes: [
+    "Men's Shoes", "Women's Shoes", "Kids' Shoes", "Sports Shoes", 
+    "Casual Shoes", "Formal Shoes", "Sandals & Flip-Flops"
+  ],
+  "Pet Supplies": [
+    "Dog Food", "Cat Food", "Pet Toys", "Pet Grooming", 
+    "Aquarium Supplies", "Bird Supplies", "Pet Beds", "Leashes & Collars"
+  ],
+  Stationery: [
+    "Notebooks", "Pens & Pencils", "Office Supplies", "Art Supplies", 
+    "Paper Products", "Desk Organizers", "Sticky Notes", "Craft Supplies"
+  ],
+  "Musical Instruments": [
+    "Guitars", "Pianos", "Drums", "Violins", "Flutes", 
+    "Keyboards", "Ukuleles", "Music Accessories"
+  ],
+  Gardening: [
+    "Seeds", "Plants", "Gardening Tools", "Pots & Planters", 
+    "Fertilizers", "Watering Equipment", "Garden Furniture", "Lawn Care"
+  ],
+  "Baby Products": [
+    "Diapers", "Baby Clothing", "Baby Toys", "Baby Care", 
+    "Baby Food", "Strollers", "Cribs", "Bath Essentials"
+  ],
+  "Smart Home": [
+    "Smart Lights", "Smart Security", "Smart Plugs", "Voice Assistants", 
+    "Smart Thermostats", "Smart Door Locks", "Smart Appliances"
+  ],
+  "Travel & Luggage": [
+    "Suitcases", "Backpacks", "Duffel Bags", "Travel Accessories", 
+    "Laptop Bags", "Wallets & Cardholders", "Trolley Bags"
+  ],
+  "Watches & Wearables": [
+    "Analog Watches", "Digital Watches", "Smartwatches", "Fitness Bands", 
+    "Luxury Watches", "Chronographs"
+  ]
+};
+
+
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
   const [image2, setImage2] = useState(false);
   const [image3, setImage3] = useState(false);
   const [image4, setImage4] = useState(false);
+  
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -151,29 +243,36 @@ const Add = ({ token }) => {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
-        <div>
-          <p className="mb-2">Product category</p>
-          <select
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-3 py-2"
-          >
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-            <option value="kids">Kids</option>
-          </select>
-        </div>
+      <div className="w-full">
+        <p className="mb-2">Select Category</p>
+        <select
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full px-3 py-2"
+        >
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <div>
-          <p className="mb-2">Sub category</p>
+
+      {category && (
+        <div className="w-full">
+          <p className="mb-2">Select Subcategory</p>
           <select
             onChange={(e) => setSubCategory(e.target.value)}
             className="w-full px-3 py-2"
           >
-            <option value="Topwear">Topwear</option>
-            <option value="Bottomwear">Bottomwear</option>
-            <option value="Winterwear">Winterwear</option>
+            {subCategories[category].map((sub) => (
+              <option key={sub} value={sub}>
+                {sub}
+              </option>
+            ))}
           </select>
         </div>
+      )}
 
         <div>
           <p className="mb-2">Product Price</p>
@@ -189,7 +288,7 @@ const Add = ({ token }) => {
 
       <div>
         <p className="mb-2">Product Sizes</p>
-        <div className="flex gap-3">
+        {(subCategory==='Topwear' || subCategory==='Winterwear') &&(<div className="flex gap-3">
           <div
             onClick={() =>
               setSizes((p) =>
@@ -273,7 +372,161 @@ const Add = ({ token }) => {
               XXL
             </p>
           </div>
-        </div>
+        </div>)}
+
+        {(subCategory==='Bottomwear') &&(<div className="flex gap-3">
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(30) ? p.filter((item) => item !== 30) : [...p, 30]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(30) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+              30
+            </p>
+          </div>
+
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(32) ? p.filter((item) => item !== 32) : [...p, 32]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(32) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+            32
+            </p>
+          </div>
+
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(34) ? p.filter((item) => item !== 34) : [...p, 34]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(34) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+            34
+            </p>
+          </div>
+
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(36)
+                  ? p.filter((item) => item !== 36)
+                  : [...p, 36]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(36) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+              36
+            </p>
+          </div>
+
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(38)
+                  ? p.filter((item) => item !== 38)
+                  : [...p, 38]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(38) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+              38
+            </p>
+          </div>
+        </div>)}
+
+        {(subCategory==='Footwear') &&(<div className="flex gap-3">
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(7) ? p.filter((item) => item !== 7) : [...p, 7]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(7) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+              7
+            </p>
+          </div>
+
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(8) ? p.filter((item) => item !== 8) : [...p, 8]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(8) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+            8
+            </p>
+          </div>
+
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(9) ? p.filter((item) => item !== 9) : [...p, 9]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(9) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+            9
+            </p>
+          </div>
+
+          <div
+            onClick={() =>
+              setSizes((p) =>
+                p.includes(10)
+                  ? p.filter((item) => item !== 10)
+                  : [...p, 10]
+              )
+            }
+          >
+            <p
+              className={`${
+                sizes.includes(10) ? "bg-pink-100" : "bg-slate-200"
+              } px-3 py-1 cursor-pointer `}
+            >
+              10
+            </p>
+          </div>
+        </div>)}
       </div>
 
       <div className="flex gap-2 mt-2">

@@ -38,5 +38,23 @@ a.active hr {
     height: 35rem;
   }
 }
+@media (max-width: 767px) {
+  .mobile-view-height {
+    height: 47% !important;
+  }
+
+  .chooosed-image-width{
+    width: 8rem !important;
+  }
+}
+
+
+
+@media (min-width: 767px) {
+  .full-screen-width {
+    height: 10vh; /* Full screen height */
+    width: 8vh;
+  }
+}
 
 

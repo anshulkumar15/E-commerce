@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState , useEffect } from "react";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/assets";
@@ -37,6 +37,101 @@ const PlaceOrder = () => {
 
     setFormData((p) => ({ ...p, [name]: value }));
   };
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleRazorpay = async (orderData) => {
+    console.log("Devabsh");
+  
+    try {
+      // Load Razorpay script before proceeding
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        toast.error("Failed to load Razorpay SDK");
+        return;
+      }
+  
+      const response = await axios.post(
+        `${backendUrl}/api/order/razorpay`,
+        orderData,
+        { headers: { token } }
+      );
+  
+      console.log("Response is", response);
+      
+      if (response.data.success) {
+        const { order_id, amount, currency, key } = response.data;
+        
+        const options = {
+          key,
+          amount,
+          currency,
+          name: "Your Company Name",
+          description: "Test Transaction",
+          order_id,
+          handler: async function (paymentResponse) {
+            const verifyRes = await axios.post(
+              `${backendUrl}/api/order/razorpay/verify`,
+              paymentResponse,
+              { headers: { token } }
+            );
+  
+            console.log("Verify Response is", verifyRes);
+            if (verifyRes.data.success) {
+              setCartItems({});
+              console.log("order Data is new devansh ", orderData)
+              const res = await axios.post(
+                backendUrl + "/api/order/razorpay/storeData",
+                orderData,
+                { headers: { token } }
+              );
+              if (res.data.success) {
+                setCartItems({});
+                navigate("/orders");
+              } else {
+                toast.error(res.data.message);
+              }
+              // navigate("/orders");
+            } else {
+              toast.error("Payment verification failed");
+            }
+          },
+          prefill: {
+            name: `${formData.firstName} ${formData.lastName}`,
+            email: formData.email,
+            contact: formData.phone,
+          },
+        };
+  
+        // **Ensure Razorpay SDK is available before creating instance**
+        if (window.Razorpay) {
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+          console.log("Devansh bhjkyutfgchvbn")
+        } else {
+          toast.error("Razorpay SDK is not available");
+        }
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Razorpay integration failed");
+    }
+  };
+  
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -97,6 +192,10 @@ const PlaceOrder = () => {
           }
 
           break;
+
+        case "razorpay": 
+          handleRazorpay(orderData);
+          setMethod("razorpay");
 
         default:
           break;

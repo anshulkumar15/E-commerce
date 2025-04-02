@@ -65,7 +65,7 @@ const Hero = () => {
     }
 
     return (
-        <div className="relative overflow-hidden bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg shadow-xl">
+        <div className="relative overflow-hidden bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg shadow-xl"  style={{zIndex:"-1"}}>
             {/* Banner container */}
             <div className="relative h-96 w-full  phone">
                 {/* Images with transition */}
@@ -79,7 +79,7 @@ const Hero = () => {
                         <img 
                             src={banner.imageUrl} 
                             alt={banner.title || `Banner ${index + 1}`} 
-                            className="w-full h-full object-contain" 
+                            className="w-full h-full object-cover" 
                         />
 
                         {/* Overlay text */}

@@ -6,11 +6,12 @@ import { toast } from "react-toastify";
 const Login = () => {
   const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
   const [currentState, setCurrentState] = useState("Login");
-
+  
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-
+  const [phone, setPhone] = useState("");
+  
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -19,11 +20,13 @@ const Login = () => {
           name,
           email,
           password,
+          phone,
         });
-
+        
         if (res.data.success) {
           setToken(res.data.token);
           localStorage.setItem("token", res.data.token);
+          navigate("/");
         } else {
           toast.error(res.data.message);
         }
@@ -31,11 +34,13 @@ const Login = () => {
         const res = await axios.post(backendUrl + "/api/user/login", {
           email,
           password,
+          phone, // Added phone to login request
         });
-
+        
         if (res.data.success) {
           setToken(res.data.token);
           localStorage.setItem("token", res.data.token);
+          navigate("/");
         } else {
           toast.error(res.data.message);
         }
@@ -45,13 +50,13 @@ const Login = () => {
       toast.error(error.message);
     }
   };
-
+  
   useEffect(() => {
     if (token) {
       navigate("/");
     }
   }, [token]);
-
+  
   return (
     <form
       onSubmit={onSubmitHandler}
@@ -61,7 +66,7 @@ const Login = () => {
         <p className="prata-regular text-3xl">{currentState}</p>
         <hr className="border-none h-[1.5px] w-8 bg-gray-800" />
       </div>
-
+      
       {currentState === "Login" ? (
         ""
       ) : (
@@ -74,6 +79,7 @@ const Login = () => {
           value={name}
         />
       )}
+      
       <input
         type="email"
         className="w-full px-3 py-2 border border-gray-800"
@@ -82,6 +88,16 @@ const Login = () => {
         onChange={(e) => setEmail(e.target.value)}
         value={email}
       />
+      
+      <input
+        type="tel" // Changed from 'phone' to 'tel' for better semantics
+        className="w-full px-3 py-2 border border-gray-800"
+        placeholder="Phone"
+        required
+        onChange={(e) => setPhone(e.target.value)}
+        value={phone}
+      />
+      
       <input
         type="password"
         className="w-full px-3 py-2 border border-gray-800"
@@ -90,7 +106,7 @@ const Login = () => {
         onChange={(e) => setPassword(e.target.value)}
         value={password}
       />
-
+      
       <div className="w-full flex justify-between text-sm mt-[-8px]">
         <p className="cursor-pointer">Forgot your password?</p>
         {currentState === "Login" ? (
@@ -109,7 +125,7 @@ const Login = () => {
           </p>
         )}
       </div>
-
+      
       <button className="bg-black text-white font-light px-8 py-2 mt-4">
         {currentState === "Login" ? "Sign In" : "Sign Up"}
       </button>

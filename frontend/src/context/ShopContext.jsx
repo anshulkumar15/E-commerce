@@ -18,10 +18,7 @@ const ShopContextProvider = (props) => {
   const navigate = useNavigate();
 
   const addToCart = async (itemId, size) => {
-    if (!size) {
-      toast.error("Select product size!");
-      return;
-    }
+
 
     let cartData = structuredClone(cartItems);
 
@@ -138,6 +135,51 @@ const ShopContextProvider = (props) => {
     }
   };
 
+  const [user, setUser] = useState(null); // User object (name, email, etc.)
+
+  const getUser = async (token) => {
+      try {
+          const res = await axios.get(backendUrl + "/api/user/profile", {
+              headers: { token },
+          });
+
+          if (res.data.success) {
+              setUser(res.data.user);
+          } else {
+              toast.error(res.data.message);
+          }
+      } catch (error) {
+          console.error("Error fetching user profile:", error);
+          toast.error("Failed to fetch user profile.");
+      }
+  };
+  console.log(getUser,"getUser")
+
+  const updateUser = async (updatedUserData) => {
+      try {
+          const res = await axios.put(
+              backendUrl + "/api/user/profile",
+              updatedUserData,
+              { headers: { token } }
+          );
+  console.log(updateUser,"update")
+          if (res.data.success) {
+              setUser(res.data.user); // Update local user state
+              toast.success("Profile updated successfully!");
+          } else {
+              toast.error(res.data.message);
+          }
+      } catch (error) {
+          console.error("Error updating user profile:", error);
+          toast.error("Failed to update profile.");
+      }
+  };
+  useEffect(() => {
+    if (token) {
+        getUser(token);
+    }
+}, [token]);
+
   useEffect(() => {
     getProductsData();
   }, []);
@@ -167,6 +209,8 @@ const ShopContextProvider = (props) => {
     token,
     setToken,
     setCartItems,
+    user,
+    updateUser,
   };
 
   return (

@@ -2,11 +2,19 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 import nodemailer from "nodemailer";
+import Razorpay from "razorpay";
+import dotenv from "dotenv";
+import crypto from "crypto";
 
 
 //GLOBAL VARIABLES
 const currency = "usd";
 const deliveryCharges = 10;
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 //GET WAY INITIALIZE
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -102,10 +110,12 @@ Your Store Team`,
 
 // PLACING ORDERS USING COD
 export const placeOrder = async (req, res) => {
+
+  console.log("New devansh", req.body);
   try {
     const { userId, items, amount, address } = req.body;
 
-    console.log( userId, items, amount, address)
+    
 
     const orderData = {
       userId,
@@ -124,8 +134,8 @@ export const placeOrder = async (req, res) => {
     const adminemail = "anshulkumar6140@gmail.com"
 
     await userModel.findByIdAndUpdate(userId, { cartData: {} });
-    sendOrderConfirmationToAdmin(userId, items , amount , address ,adminemail);
-    sendOrderConfirmationToUser(userId, items, amount, address);
+    sendOrderConfirmationToAdmin(userId, items , amount , address ,adminemail , orderData.paymentMethod);
+    sendOrderConfirmationToUser(userId, items, amount, address , orderData.paymentMethod);
     res.json({ success: true, message: "Order Placed" });
   } catch (error) {
     console.log(error);
@@ -209,7 +219,32 @@ export const verifyStripe = async (req, res) => {
 };
 
 // PLACING ORDERS USING RAZORPAY
-export const placeOrderRazorpay = async (req, res) => {};
+export const placeOrderRazorpay = async (req, res) => {
+  console.log("Devansh")
+  try {
+    const { amount } = req.body;
+    console.log("req, body ", req.body)
+
+    const order = await razorpay.orders.create({
+      amount: amount * 100, // Amount in paisa
+      currency: "INR",
+      payment_capture: 1, // Auto-capture payment
+      
+    });
+
+    console.log("Devansh")
+    res.json({
+      success: true,
+      order_id: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      key: process.env.RAZORPAY_KEY_ID,
+    });
+  } catch (error) {
+    console.error("Razorpay Order Error:", error);
+    res.status(500).json({ success: false, message: "Razorpay order failed" });
+  }
+};
 
 //ALL ORDERS DATA FOR ADMIN PANEL
 export const allOrders = async (req, res) => {
@@ -226,6 +261,7 @@ export const allOrders = async (req, res) => {
 export const userOrders = async (req, res) => {
   try {
     const { userId } = req.body;
+    console.log(userId,"lkwndnld")
 
     const orders = await orderModel.find({ userId });
 
@@ -249,3 +285,93 @@ export const updateStatus = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+export const fetchUsersOrders = async (req, res) => {
+  try {
+    const { userId } = req.params; // Get userId from URL params
+    console.log(userId, "userId");
+
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required" });
+    }
+
+    const orders = await orderModel
+      .find({ userId: userId })
+      .sort({ date: -1 }); // Sort by date in descending order
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
+        success: true,
+        message: "No orders found for this user",
+        orders: [], // Return an empty array if no orders are found
+      });
+    }
+
+    res.json({ success: true, orders });
+  } catch (error) {
+    console.error("Error fetching user orders:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const verifyplaceOrderRazorpay = async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    // Ensure secret key is available
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      return res.status(500).json({ success: false, message: "Razorpay secret key not found" });
+    }
+
+    // Create HMAC SHA256 signature
+    const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
+    hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+    const calculatedSignature = hmac.digest("hex");
+
+    if (calculatedSignature === razorpay_signature) {
+      res.json({ success: true, message: "Payment verified successfully" });
+    } else {
+      res.status(400).json({ success: false, message: "Invalid payment signature" });
+    }
+  } catch (error) {
+    console.error("Payment Verification Error:", error);
+    res.status(500).json({ success: false, message: "Payment verification failed" });
+  }
+};
+
+
+export const razorpayStoreData = async (req, res) => {
+
+  
+  console.log("New devansh", req.body);
+  try {
+    const { userId, items, amount, address } = req.body;
+
+    
+
+    const orderData = {
+      userId,
+      items,
+      address,
+      amount,
+      paymentMethod: "razorpay",
+      payment: true,
+      date: Date.now(),
+    };
+
+    console.log("Address is ", address.email);
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
+
+    const adminemail = "anshulkumar6140@gmail.com"
+
+    await userModel.findByIdAndUpdate(userId, { cartData: {} });
+    sendOrderConfirmationToAdmin(userId, items , amount , address ,adminemail , orderData.paymentMethod);
+    sendOrderConfirmationToUser(userId, items, amount, address , orderData.paymentMethod);
+    res.json({ success: true, message: "Order Placed" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+
+}

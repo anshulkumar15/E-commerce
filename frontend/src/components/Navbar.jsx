@@ -1,10 +1,16 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import { FaChevronDown } from 'react-icons/fa';
+// import '../css/navv.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const [sideOpen, setSideOpen]= useState(false);
 
   const {
     setShowSearch,
@@ -22,17 +28,69 @@ const Navbar = () => {
     setCartItems({});
   };
 
+  const handleClick= (e, key)=> {
+    e.preventDefault();
+
+    navigate('/products',
+      {state:{
+        key:key
+      }}
+    )
+  }
+
   return (
-    <div className="flex item-center justify-between py-5 font-medium">
+    <div className="flex item-center justify-between py-3 font-medium">
       <Link to={"/"}>
-        <img src={assets.logo} className="w-36" alt="" />
+        <img src={assets.shopsneoLogo} className="w-36" alt="" />
       </Link>
 
-      <ul className="hidden sm:flex gap-16 text-sm text-gray-700">
+      <ul className="hidden sm:flex gap-16 text-sm text-gray-700 d-flex align-items-center">
         <NavLink to="/" className="flex flex-col items-center gap-1">
           <p>HOME</p>
           <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />
         </NavLink>
+
+        <div className="group relative">
+          <span
+            src={assets.profile_icon}
+            className="w-5 cursor-pointer"
+            alt=""
+            onClick={() => (setSideOpen(true))}
+          >PRODUCT</span>
+          <FontAwesomeIcon icon={faChevronDown} />
+
+          {/* DROPDOWN */}
+          {sideOpen && (
+            <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4"  style={{zIndex:"1"}}>
+              <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
+                <p
+                  onClick={(e) => handleClick(e,'clothes')}
+                  className="cursor-pointer text-nowrap hover:text-black"
+                >
+                  Clothes
+                </p>
+                <p onClick={(e) => handleClick(e,'mobile')} className="cursor-pointer text-nowrap hover:text-black">
+                  Mobiles
+                </p>
+                <p onClick={(e) => handleClick(e,'accessories')} className="cursor-pointer text-nowrap hover:text-black">
+                  Accessories
+                </p>
+                <p onClick={(e) => handleClick(e,'laptops')} className="cursor-pointer text-nowrap hover:text-black">
+                  Laptop/PCs
+                </p>
+                <p onClick={(e) => handleClick(e,'watches')} className="cursor-pointer text-nowrap hover:text-black">
+                  Smart Watches
+                </p>
+                <p onClick={(e) => handleClick(e,'jewellery')} className="cursor-pointer text-nowrap hover:text-black">
+                  Artificial Jewellery
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      
+
+       
         <NavLink to="/collection" className="flex flex-col items-center gap-1">
           <p>COLLECTION</p>
           <hr className="w-2/4 border-none h-[1.5px] bg-gray-700 hidden" />
@@ -66,7 +124,7 @@ const Navbar = () => {
           {token && (
             <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4 "  style={{zIndex:"1"}}>
               <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
-                <p className="cursor-pointer hover:text-black">My Profile</p>
+                <p className="cursor-pointer hover:text-black"  onClick={()=>navigate("/myProfile")}>My Profile</p>
                 <p
                   onClick={() => navigate("/orders")}
                   className="cursor-pointer hover:text-black"
@@ -116,6 +174,7 @@ const Navbar = () => {
           >
             HOME
           </NavLink>
+          
           <NavLink
             onClick={() => setVisible(false)}
             to={"/collection"}

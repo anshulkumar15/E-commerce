@@ -1,0 +1,6 @@
+@media (min-width: 767px) {
+    .gapp {
+      
+        column-gap: 18rem  !important;
+    }
+}

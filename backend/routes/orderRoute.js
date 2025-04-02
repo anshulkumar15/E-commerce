@@ -7,6 +7,8 @@ import {
   updateStatus,
   userOrders,
   verifyStripe,
+  razorpayStoreData,
+  verifyplaceOrderRazorpay
 } from "../controllers/orderController.js";
 import adminAuth from "../middleware/adminAuth.js";
 import authUser from "../middleware/auth.js";
@@ -20,12 +22,15 @@ orderRouter.post("/status", adminAuth, updateStatus);
 //PAYMENT FEATURE
 orderRouter.post("/place", authUser, placeOrder);
 orderRouter.post("/stripe", authUser, placeOrderStripe);
-orderRouter.post("/razorpay", authUser, placeOrderRazorpay);
+
 
 //USER FEATURE
 orderRouter.post("/userorders", authUser, userOrders);
 
 //VERIFY PAYMENT
 orderRouter.post("/verifystripe", authUser, verifyStripe);
+orderRouter.post("/razorpay", authUser, placeOrderRazorpay);
+orderRouter.post("/razorpay/verify", authUser, verifyplaceOrderRazorpay);
+orderRouter.post("/razorpay/storeData", authUser, razorpayStoreData);
 
 export default orderRouter;

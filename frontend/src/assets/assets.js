@@ -75,9 +75,41 @@ import stripe_logo from './stripe_logo.png'
 import cross_icon from './cross_icon.png'
 import seo from './seo.jpeg'
 import aa1 from './aa1.jpg'
+import shopsneoLogo from './shopsneoLogo.png'
+import tshirt from './tshirt.jpg'
+import tshirt2 from './tshirt2.jpg'
+import tshirt3 from './tshirt3.jpg'
+import tshirt4 from './tshirt4.jpg'
+import tshirt5 from './tshirt5.jpg'
+import tshirt6 from './tshirt6.jpg'
+
+
+import c1 from './c1.jpeg';
+import c2 from './c2.jpeg';
+import c3 from './c3.jpeg';
+import c4 from './c4.jpeg';
+import c5 from './c5.jpeg';
+import c6 from './c6.jpeg';
+import c7 from './c7.jpeg';
+import c8 from './c8.jpeg';
+import c9 from './c9.jpeg';
+
+
+import c12 from './c12.jpeg';
+import c13 from './c13.jpeg';
+import c14 from './c14.jpeg';
+import c15 from './c15.jpeg';
+import c16 from './c16.jpeg';
+import c17 from './c17.jpeg';
+import c18 from './c18.jpeg';
+import c19 from './c19.jpeg';
+import c20 from './c20.jpeg';
+import c10 from './c10.jpeg';
+
 
 export const assets = {
     logo,
+    shopsneoLogo,
     hero_img,
     aa1,
     cart_icon,
@@ -97,7 +129,32 @@ export const assets = {
     contact_img,
     razorpay_logo,
     stripe_logo,
-    cross_icon
+    cross_icon,
+    tshirt,
+    tshirt2,
+    tshirt3,
+    tshirt4,
+    tshirt5,
+    tshirt6,
+    c1,
+    c2,
+    c3,
+    c4,
+    c5,
+    c6,
+    c7,
+    c8,
+    c9,
+    c10,
+    c12,
+    c13,
+    c14,
+    c15,
+    c16,
+    c17,
+    c18,
+    c19,
+    c20,
 }
 
 export const products = [

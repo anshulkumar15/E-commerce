@@ -14,13 +14,18 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Verify from "./pages/Verify";
 import SearchBar from "./components/SearchBar";
+import MyProfile from "./components/myProfile";
+import Clothes from "./pages/Clothes";
+import CustomizePage from "./pages/CustomizePage";
+import PhotoeditPage from "./pages/PhotoeditPage";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 
 const App = () => {
   return (
-    <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw] ">
+    <div className="px-5 sm:px-[5vw]   "  >
+      
       <ToastContainer />
       <Navbar />
       <SearchBar />
@@ -35,6 +40,11 @@ const App = () => {
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/verify" element={<Verify />} />
+        <Route path="/myProfile" element={<MyProfile />} />
+        <Route path="/products" element={<Clothes />} />
+        <Route path="customize" element={<CustomizePage/>}></Route>
+        <Route path="/photoedit" element={<PhotoeditPage/>}></Route>
+
       </Routes>
       <Footer />
     </div>
